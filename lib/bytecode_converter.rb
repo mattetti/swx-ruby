@@ -1,3 +1,12 @@
+class String
+  def each_character_with_index
+    split(//).each_with_index { |c, index|
+      yield( c, index )
+    }
+  end
+end
+
+
 module BytecodeConverter
   class << self
 	  DATA_TYPE_CODES = {
@@ -14,15 +23,19 @@ module BytecodeConverter
 			when Integer
 				DATA_TYPE_CODES[:integer] + integer_to_bytecode(data, 4)
 			when Float
-				# '06DD9ABFBF5F633937'
-				# pack the float into a little-endian binary sequence
-				# ==================================
-				# = Totally not working at all yet =
-				# ==================================
-				[*data].pack('E')
+				binary = [data].pack('E')
+				ascii_codes = []
+				binary.each_character_with_index { |character, index| ascii_codes << binary[index] }
+				hex_codes = []
+				ascii_codes.each { |ascii_code| hex_codes << sprintf('%02X', ascii_code) }
+																	# Aral did this in SWX PHP, so I'm doing it here
+				DATA_TYPE_CODES[:float] + (hex_codes[4..-1] + hex_codes[0..3]).join
 	    when String
 	      DATA_TYPE_CODES[:string] + string_to_bytecode(data) + NULL_TERMINATOR
 	    when Array
+				# =======================
+				# = Array, you're next! =
+				# =======================
 	      '961400070300000007020000000701000000070300000042'
 	    when TrueClass
 	      '0501'
@@ -34,6 +47,8 @@ module BytecodeConverter
 	      raise StandardError, "#{data.class} is an unhandled data type"
 	    end
 	  end
+	
+
  
 	  protected
 	  def string_to_bytecode(string)
