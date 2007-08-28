@@ -51,8 +51,9 @@ module BytecodeConverter
 		# = Data Type Conversion Methods =
 		# ================================
 		def array_to_bytecode(array)
-			stack = []
 			bytecode = []
+			# keeps track of bytecode when recursing into nested arrays
+			stack = []
 			
 			# Add the length of the array to the bytecode
 			bytecode << integer_to_bytecode(array.length)
@@ -62,7 +63,7 @@ module BytecodeConverter
 			
 			# Convert each element in the array to bytecode
 			array.each do |element|
-				
+
 				if (element.is_a?(Array))
 					# If we haven't written any bytecode into the local
 					# buffer yet (if it's empty), don't write a push statement.
@@ -71,21 +72,25 @@ module BytecodeConverter
 					# Store current instruction on the stack
 					stack.unshift bytecode.join
 					
-					# Recurse
-					bytecode = [array_to_bytecode(element)]
-				else
-					# Add the bytecode for a simple data type
-					bytecode.unshift convert(element)
+					# Reset the bytecode
+					bytecode = []
 				end
+				
+				bytecode.unshift convert(element)
+				
 			end
 			
-			# If the bytecode doesn't already begin with a push,
+			# If the bytecode string doesn't already begin with a push,
 			# then add one that encompasses all of the unpushed data
 			unless (bytecode.first[0..1] == '96')
+				# Init the array to hold the data that needs to be pushed
 				push_data = []
+				# Iterate over the bytecode array and add all of the unpushed
+				# data to 'push_data'
 				bytecode.each do |bytecode_chunk|
 					if bytecode_chunk[0..1] == '96' then break else push_data << bytecode_chunk end
 				end
+				# Add a push statement for the unpushed data
 				bytecode.unshift generate_push_statement(push_data)
 			end
 			
