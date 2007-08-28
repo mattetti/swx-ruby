@@ -16,31 +16,27 @@ module BytecodeConverter
 	    :float    => '06',
 	    :integer  => '07'
 	  }    
-	  NULL_TERMINATOR   = '00'
+	  NULL_TERMINATOR = '00'
+	
+		# Action bytecodes
+		ACTION_INIT_ARRAY  = '42'
+		ACTION_INIT_OBJECT = '43'
+		
 
 	  def convert(data=nil)
 	    case data
 			when Integer
-				DATA_TYPE_CODES[:integer] + integer_to_bytecode(data, 4)
+				integer_to_bytecode(data)
 			when Float
-				binary = [data].pack('E')
-				ascii_codes = []
-				binary.each_character_with_index { |character, index| ascii_codes << binary[index] }
-				hex_codes = []
-				ascii_codes.each { |ascii_code| hex_codes << sprintf('%02X', ascii_code) }
-																	# Aral did this in SWX PHP, so I'm doing it here
-				DATA_TYPE_CODES[:float] + (hex_codes[4..-1] + hex_codes[0..3]).join
+				float_to_bytecode(data)
 	    when String
-	      DATA_TYPE_CODES[:string] + string_to_bytecode(data) + NULL_TERMINATOR
+	      string_to_bytecode(data)
 	    when Array
-				# =======================
-				# = Array, you're next! =
-				# =======================
-	      '961400070300000007020000000701000000070300000042'
+				array_to_bytecode(data)
 	    when TrueClass
-	      '0501'
+	      DATA_TYPE_CODES[:boolean] + '01'
 	    when FalseClass
-	      '0500'
+	      DATA_TYPE_CODES[:boolean] + '00'
 	    when NilClass
 	      '02'
 	    else
@@ -51,29 +47,114 @@ module BytecodeConverter
 
  
 	  protected
-	  def string_to_bytecode(string)
-	     string.unpack('H*').to_s.upcase
+		# ================================
+		# = Data Type Conversion Methods =
+		# ================================
+		def array_to_bytecode(array)
+			stack = []
+			bytecode = []
+			
+			# Add the length of the array to the bytecode
+			bytecode << integer_to_bytecode(array.length)
+			
+			# Add the bytecode to initialize the array
+			bytecode << ACTION_INIT_ARRAY
+			
+			# Convert each element in the array to bytecode
+			array.each do |element|
+				
+				if (element.is_a?(Array))
+					# If we haven't written any bytecode into the local
+					# buffer yet (if it's empty), don't write a push statement.
+					bytecode.unshift generate_push_statement(bytecode) unless bytecode.empty?
+					
+					# Store current instruction on the stack
+					stack.unshift bytecode.join
+					
+					# Recurse
+					bytecode = [array_to_bytecode(element)]
+				else
+					# Add the bytecode for a simple data type
+					bytecode.unshift convert(element)
+				end
+			end
+			
+			# If the bytecode doesn't already begin with a push,
+			# then add one that encompasses all of the unpushed data
+			unless (bytecode.first[0..1] == '96')
+				push_data = []
+				bytecode.each do |bytecode_chunk|
+					if bytecode_chunk[0..1] == '96' then break else push_data << bytecode_chunk end
+				end
+				bytecode.unshift generate_push_statement(push_data)
+			end
+			
+			# Add the bytecode to the local stack variable
+			stack.unshift bytecode.join
+			# Join the stack array into a string and return it
+			stack.join
+		end
+	
+		def float_to_bytecode(float)
+			binary = [float].pack('E')
+			ascii_codes = []
+			binary.each_character_with_index { |character, index| ascii_codes << binary[index] }
+			hex_codes = []
+			ascii_codes.each { |ascii_code| hex_codes << sprintf('%02X', ascii_code) }
+																# Aral did this in SWX PHP, so I'm doing it here
+			DATA_TYPE_CODES[:float] + (hex_codes[4..-1] + hex_codes[0..3]).join
+		end
+	
+		def integer_to_bytecode(integer)
+			DATA_TYPE_CODES[:integer] + integer_to_hexadecimal(integer, 4)
+		end
+				
+		def string_to_bytecode(string)
+	     DATA_TYPE_CODES[:string] + string.unpack('H*').to_s.upcase + NULL_TERMINATOR
 	  end
 	
-		def integer_to_bytecode(integer, num_bytes=1)
-			# convert string to uppercase hex
- 			hex = ('%X' % integer)
+	
+		# ==================
+		# = Helper Methods =
+		# ==================
+		def generate_push_statement(bytecode)
+			bytecode_length = calculate_bytecode_length(bytecode)
+  		 # TODO: Replace with constant
+			'96' + integer_to_hexadecimal(bytecode_length, 2)
+		end
+		
+		def calculate_bytecode_length(bytecode)
+			bytecode_length = bytecode.join.length/2
 			
-			# ensure that string is padded to the byte-boundary
-			hex = '0' + hex if hex.length % 2 == 1
-
+			# Calculate bytecode length *without* counting the 
+			# init object or init array action
+			bytecode_length -=1 if (bytecode.last == ACTION_INIT_ARRAY || bytecode.last == ACTION_INIT_OBJECT)
+			
+			bytecode_length
+		end
+		
+		def integer_to_hexadecimal(integer, number_of_bytes=1)
+			make_little_endian("%0#{number_of_bytes*2}X" % integer)
+		end
+		
+		def make_little_endian(hex_string)
+			hex_string = pad_string_to_byte_boundary(hex_string)
+			
 			# split into an array of hex pairs
   							     	# capturing parens in the regexp keep the letter-pairs used to split
 								      # i.e. "aabbcc" becomes ["", "aa", "", "bb", "", "cc"]
-			hex = hex.split(/(\w\w)/)
+			hex_string = hex_string.split(/(\w\w)/)
 			
 			# delete the empty strings
-			hex.delete("")
+			hex_string.delete("")
 			
 			# reverse the array and join back into a string
-			hex = hex.reverse.join
-			
-			hex = hex.ljust(num_bytes*2, '0')
+			hex_string.reverse.join
+		end
+		
+		def pad_string_to_byte_boundary(hex_string)
+			hex_string = '0' + hex_string if hex_string.length % 2 == 1
+			hex_string
 		end
 	end
 end

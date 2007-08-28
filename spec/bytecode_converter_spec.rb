@@ -54,6 +54,22 @@ describe BytecodeConverter, 'in regard to arrays' do
 	it 'should convert "[1, 2, 3]" to bytecode' do
     BytecodeConverter.convert([1, 2, 3]).should == '961400070300000007020000000701000000070300000042'
   end
+	
+	it %q{should convert "['one', 'two', 'three']" to bytecode} do
+    BytecodeConverter.convert(['one', 'two', 'three']).should == '961600007468726565000074776F00006F6E6500070300000042'
+  end
+	
+	it %q{should convert "[1, 'two', 3.5]" to bytecode} do
+    BytecodeConverter.convert([1, 'two', 3.5]).should == '9618000600000C40000000000074776F000701000000070300000042'
+  end
+	
+	it %q{should convert "[1, ['two', 3.5]]" to bytecode} do
+    BytecodeConverter.convert([1, ['two', 3.5]]).should == '9613000600000C40000000000074776F00070200000042960A000701000000070200000042'
+  end
+
+	it %q{should convert "[[1], 'two', 3.5]" to bytecode} do
+    BytecodeConverter.convert([[1], 'two', 3.5]).should == '960E000600000C40000000000074776F00960A000701000000070100000042960500070300000042'
+  end
 end
 
 describe BytecodeConverter, 'in regard to booleans' do
