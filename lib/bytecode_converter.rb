@@ -1,19 +1,11 @@
-module BytecodeConverter
+require 'core_extensions'
+require 'helper_module'
+
+class BytecodeConverter
+	include HelperMethods
   class << self
-	  DATA_TYPE_CODES = {
-	    :null     => '02',
-	    :string   => '00',
-	    :boolean  => '05',
-	    :float    => '06',
-	    :integer  => '07'
-	  }    
 	  NULL_TERMINATOR = '00'
 	
-		# Action bytecodes
-		ACTION_INIT_ARRAY  = '42'
-		ACTION_INIT_OBJECT = '43'
-		
-		# Various contants
 		COMPLEX_DATA_STRUCTURES = [Array, Hash]
 
 	  def convert(data)
@@ -27,9 +19,9 @@ module BytecodeConverter
 	    when String
 	      string_to_bytecode(data)
 	    when FalseClass
-	      DATA_TYPE_CODES[:boolean] + '00'
+	      DataTypeCodes::BOOLEAN + '00'
 	    when TrueClass
-	      DATA_TYPE_CODES[:boolean] + '01'
+	      DataTypeCodes::BOOLEAN + '01'
 	    when NilClass
 	      '02'
 	    else
@@ -46,128 +38,78 @@ module BytecodeConverter
 		
 		def complex_data_structure_to_bytecode(data)
 			bytecode = []
-			# keeps track of bytecode when recursing into nested data structures
-			stack = []
 			
+			# Keeps track of bytecode when recursing into nested data structures
+			stack = []
+
 			# Add the bytecode to initialize the data structure
-			bytecode.unshift(data.is_a?(Array) ? ACTION_INIT_ARRAY : ACTION_INIT_OBJECT)
+			bytecode.push(if data.is_a?(Array) then ActionCodes::INIT_ARRAY elsif data.is_a?(Hash) then ActionCodes::INIT_OBJECT end)
 
 			# Add the length of the data structure to the bytecode
-			bytecode.unshift integer_to_bytecode(data.length)
+			bytecode.push integer_to_bytecode(data.length)
 			
-			# Convert each element in the array to bytecode
+			# Convert each element in the data structure to bytecode
 			data.each do |element|
 				
-				# If we're iterating over a Hash, then split the element's key/value
+				# If we're iterating over a hash, then split the element's key/value
 				if (data.is_a?(Hash))
 					value = element[1]
 					element = element[0]
 				end
 
-					# Recursing into a complex data structure
-					#									   # OR
+				# Create a push of the current bytecode, if
+					 # recursing into a complex data structure
+					 #									 # or
 				if (element.is_a?(Array) || 
-					  element.is_a?(Hash)	 || # We're close to the 65K limit that can be stored in a single push,
-						value.is_a?(Array)   || # so create the push and reset the bytecode 
-						value.is_a?(Hash)	   || calculate_bytecode_length(bytecode) > 65518)
-						
-					# Create a push of the current bytecode
+					    value.is_a?(Array) || 
+						element.is_a?(Hash)  || # we're approaching the 65535 byte limit that can be stored in a single push.
+						  value.is_a?(Hash)	 || calculate_bytecode_length(bytecode) > 65518)
 						
 					# If we haven't written any bytecode into the local
-					# buffer yet (if it's empty),or all the data is already pushed, don't write a push statement.
-					bytecode.unshift generate_push_statement(bytecode) unless bytecode.empty? || bytecode.first[0..1] == '96'
+					# buffer yet (if it's empty), or all the data is already pushed, skip writing the push statement
+					bytecode.push generate_push_statement(bytecode) unless bytecode.empty? || bytecode.last.begins_with?('96')
 					
-					# Store current instruction on the stack
-					stack.unshift bytecode.join
+					# Store current instruction on the stack (SWF bytecode is stored in reverse, so we reverse it here)
+					stack.push bytecode.reverse.join
 					
 					# Reset the bytecode
 					bytecode = []
 				end
 				
-				# value will only be populated if we're iterating over a Hash
-				bytecode.unshift convert(value) unless value.nil?
+				# value will only be populated if we're iterating over a hash
+				bytecode.push convert(value) unless value.nil?
 				
-				bytecode.unshift convert(element)
+				# element will always contain a something (whether iterating over a hash or an array)
+				bytecode.push convert(element)
 			end
+
+      # If we haven't written any bytecode into the local
+			# buffer yet (if it's empty), or all the data is already pushed, skip writing the push statement
+      bytecode.push generate_push_statement(bytecode) unless bytecode.empty? || bytecode.last.begins_with?('96')
 			
-			# If the bytecode string doesn't already begin with a push,
-			# then add one that encompasses all of the unpushed data
-			unless (bytecode.first[0..1] == '96')
-				# Add a push statement for the unpushed data
-				bytecode.unshift generate_push_statement(bytecode)
-			end
+			# Add the bytecode to the local stack variable (SWF bytecode is stored in reverse, so we reverse it here)
+			stack.push bytecode.reverse.join
 			
-			# Add the bytecode to the local stack variable
-			stack.unshift bytecode.join
-			# Join the stack array into a string and return it
-			stack.join
+			# Join the stack array into a string and return it (SWF bytecode is stored in reverse, so we reverse it here)
+			stack.reverse.join
 		end
 	
 		def float_to_bytecode(float)
-			binary = [float].pack('E')
+			binary = [float].pack('E')[0..-1]
 			ascii_codes = []
 			binary.each_character_with_index { |character, index| ascii_codes << binary[index] }
 			hex_codes = []
 			ascii_codes.each { |ascii_code| hex_codes << '%02X' % ascii_code }
 																# Aral did this in SWX PHP, so I'm doing it here
-			DATA_TYPE_CODES[:float] + (hex_codes[4..-1] + hex_codes[0..3]).join
+			DataTypeCodes::FLOAT + (hex_codes[4..-1] + hex_codes[0..3]).join
 		end
 	
 		def integer_to_bytecode(integer)
-			DATA_TYPE_CODES[:integer] + integer_to_hexadecimal(integer, 4)
+			DataTypeCodes::INTEGER + integer_to_hexadecimal(integer, 4)
 		end
 				
 		def string_to_bytecode(string)
-	    DATA_TYPE_CODES[:string] + string.unpack('H*').to_s.upcase + NULL_TERMINATOR
+	    DataTypeCodes::STRING + string.unpack('H*').to_s.upcase + NULL_TERMINATOR
 	  end
-	
-		# ==================
-		# = Helper Methods =
-		# ==================
-		def generate_push_statement(bytecode)
-			unpushed_data = []
-			# Iterate over the bytecode array and add all of the unpushed
-			# data to 'unpushed_data'
-			bytecode.each do |bytecode_chunk|
-				if bytecode_chunk[0..1] == '96' then break else unpushed_data << bytecode_chunk end
-			end
-			
-			bytecode_length = calculate_bytecode_length(unpushed_data)
-  		 # TODO: Replace with constant
-			'96' + integer_to_hexadecimal(bytecode_length, 2)
-		end
-		
-		def calculate_bytecode_length(bytecode)
-			bytecode_length = bytecode.join.length/2
-			
-			# Calculate bytecode length *without* counting the 
-			# init object or init array action
-			bytecode_length -=1 if (bytecode.last == ACTION_INIT_ARRAY || bytecode.last == ACTION_INIT_OBJECT)
-			
-			bytecode_length
-		end
-		
-		def integer_to_hexadecimal(integer, number_of_bytes=1)
-			make_little_endian("%0#{number_of_bytes*2}X" % integer)
-		end
-		
-		def make_little_endian(hex_string)
-			# split into an array of string pairs
-			# reverse the array and join back into a string
-			pad_string_to_byte_boundary(hex_string).scan(/(..)/).reverse.join
-		end
-		
-		def pad_string_to_byte_boundary(hex_string)
-			hex_string += '0' if hex_string.length % 2 == 1
-			hex_string
-		end
 	end
-end
-
-class String
-  def each_character_with_index
-    split(//).each_with_index { |c, index|
-      yield( c, index )
-    }
-  end
 end

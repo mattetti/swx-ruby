@@ -5,37 +5,33 @@ require 'spec/runner'
 require 'bytecode_converter'
 
 describe BytecodeConverter, 'in regard to arrays' do
-	it 'should convert "[1, 2, 3]" to bytecode' do
-    BytecodeConverter.convert([1, 2, 3]).should == '961400070300000007020000000701000000070300000042'
-  end
-	
-	it %q(should convert "['one', 'two', 'three']" to bytecode) do
+  it 'should convert "[1, 2, 3]" to bytecode' do
+      BytecodeConverter.convert([1, 2, 3]).should == '961400070300000007020000000701000000070300000042'
+    end
+  
+  it %q(should convert "['one', 'two', 'three']" to bytecode) do
     BytecodeConverter.convert(['one', 'two', 'three']).should == '961600007468726565000074776F00006F6E6500070300000042'
   end
-	
-	it %q(should convert "[1, 'two', 3.5]" to bytecode) do
-    BytecodeConverter.convert([1, 'two', 3.5]).should == '9618000600000C40000000000074776F000701000000070300000042'
-  end
-	
-	it %q(should convert "[1, ['two', 3.5]]" to bytecode) do
-    BytecodeConverter.convert([1, ['two', 3.5]]).should == '9613000600000C40000000000074776F00070200000042960A000701000000070200000042'
-  end
-
-	it %q(should convert "[[1], 'two', 3.5]" to bytecode) do
+  
+     it %q(should convert "[1, 'two', 3.5]" to bytecode) do
+      BytecodeConverter.convert([1, 'two', 3.5]).should == '9618000600000C40000000000074776F000701000000070300000042'
+    end
+     
+    it %q(should convert "[1, ['two', 3.5]]" to bytecode) do
+      BytecodeConverter.convert([1, ['two', 3.5]]).should == '9613000600000C40000000000074776F00070200000042960A000701000000070200000042'
+    end
+  
+  it %q(should convert "[[1], 'two', 3.5]" to bytecode) do
     BytecodeConverter.convert([[1], 'two', 3.5]).should == '960E000600000C40000000000074776F00960A000701000000070100000042960500070300000042'
   end
-	
-	it %q(should convert "[1, {'number' => 2}, 3]") do
-		BytecodeConverter.convert([1, {'number' => 2}, 3]).should == '9605000703000000961200006E756D626572000702000000070100000043960A000701000000070300000042'
-	end
-
-	it %q(should convert "[1, {'numbers' => [{'two' => 2}, {'three' => 3}]}, 4]") do
-		BytecodeConverter.convert([1, {'numbers' => [{'two' => 2}, {'three' => 3}]}, 4]).should == '9605000704000000960900006E756D6265727300961100007468726565000703000000070100000043960F000074776F000702000000070100000043960500070200000042960500070100000043960A000701000000070300000042'
-	end
-	
-	# it %q{should convert "[[1], 'two', 3.5]" to bytecode} do
-	#     BytecodeConverter.convert([[1], 'two'*100_000, 3.5]).should == '960E000600000C40000000000074776F00960A000701000000070100000042960500070300000042'
-	#   end
+   
+   it %q(should convert "[1, {'number' => 2}, 3]") do
+     BytecodeConverter.convert([1, {'number' => 2}, 3]).should == '9605000703000000961200006E756D626572000702000000070100000043960A000701000000070300000042'
+   end
+     
+   it %q(should convert "[1, {'numbers' => [{'two' => 2}, {'three' => 3}]}, 4]") do
+     BytecodeConverter.convert([1, {'numbers' => [{'two' => 2}, {'three' => 3}]}, 4]).should == '9605000704000000960900006E756D6265727300961100007468726565000703000000070100000043960F000074776F000702000000070100000043960500070200000042960500070100000043960A000701000000070300000042'
+   end	
 end
 
 describe BytecodeConverter, 'in regard to booleans' do
@@ -66,7 +62,7 @@ describe BytecodeConverter, 'in regard to hashes' do
   it %q[should convert {'numbers' => [1]} to bytecode] do
     BytecodeConverter.convert({'numbers' => [1]}).should == '960900006E756D6265727300960A000701000000070100000042960500070100000043'
   end
-
+  
   it %q[should convert {'they' => ['really', 'work'], 'numbers' => [1, 2, 3]} to bytecode] do
     BytecodeConverter.convert({'they' => ['really', 'work'], 'numbers' => [1, 2, 3]}).should == '960900006E756D626572730096140007030000000702000000070100000007030000004296060000746865790096130000776F726B00007265616C6C7900070200000042960500070200000043'
   end

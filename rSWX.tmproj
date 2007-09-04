@@ -26,29 +26,29 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>12</integer>
+				<integer>127</integer>
 				<key>line</key>
-				<integer>52</integer>
+				<integer>45</integer>
 			</dict>
 			<key>columnSelection</key>
 			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>47</integer>
+			<integer>76</integer>
 			<key>selectFrom</key>
 			<dict>
 				<key>column</key>
-				<integer>6</integer>
+				<integer>3</integer>
 				<key>line</key>
-				<integer>52</integer>
+				<integer>44</integer>
 			</dict>
 			<key>selectTo</key>
 			<dict>
 				<key>column</key>
-				<integer>23</integer>
+				<integer>127</integer>
 				<key>line</key>
-				<integer>52</integer>
+				<integer>45</integer>
 			</dict>
 		</dict>
 		<key>spec/bytecode_converter_spec.rb</key>
@@ -56,24 +56,24 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>5</integer>
+				<integer>68</integer>
 				<key>line</key>
-				<integer>71</integer>
+				<integer>62</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>47</integer>
+			<integer>43</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>spec/bytecode_converter_spec.rb</string>
 		<string>lib/bytecode_converter.rb</string>
+		<string>spec/bytecode_converter_spec.rb</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<false/>
 	<key>windowFrame</key>
-	<string>{{9, 4}, {660, 874}}</string>
+	<string>{{64, 152}, {1360, 726}}</string>
 </dict>
 </plist>
