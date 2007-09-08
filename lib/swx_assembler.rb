@@ -24,7 +24,11 @@ class SwxAssembler
 	class << self
 	  def compress_swx_file(swx_file)
 	    # The first eight bytes of a compressed SWF file are left uncompressed
-	    swx_file.slice!(0..8) + Zlib::Deflate.deflate(swx_file, @compression_level)
+      swx_file.slice!(0..8) + Zlib::Deflate.deflate(swx_file, @compression_level)
+      # z = Zlib::Deflate.new(@compression_level)
+      # dst = z.deflate(swx_file, Zlib::FINISH)
+      # z.close
+      # dst
 	  end
 	  
 	  def generate_swx_bytecode(data)
@@ -75,7 +79,7 @@ class SwxAssembler
       # = TODO: Find out why the Ruby Zlib library is producing different headers and trailers than PHP's gzcompress =
       # ==============================================================================================================
       # compression is disabled until I can figure out what's wrong with Ruby's Zlib library
-		  @compression_level = compression_level
+		  @compression_level = 0
 		  @url = url
 
       swx_bytecode = generate_swx_bytecode(data)
@@ -87,9 +91,9 @@ class SwxAssembler
       swx_file = compress_swx_file(swx_file) if compression_level > 0
       
       # Write the file (for testing in Flash)
-      # File.open('/Users/Jed/Development/Libraries/rSWX/testing/flash/rswx_data.swx', 'w+') do |file|
-      #   file << swx_file
-      # end      
+      File.open('/Users/Jed/Development/Libraries/rSWX/testing/flash/rswx_data.swx', 'w+') do |file|
+        file << swx_file
+      end      
       
       swx_file
 		end

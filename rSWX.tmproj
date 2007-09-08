@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>lib/swf_assembler.rb</string>
+	<string>lib/swx_assembler.rb</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -21,28 +21,28 @@
 	<integer>284</integer>
 	<key>metaData</key>
 	<dict>
-		<key>lib/swf_assembler.rb</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>79</integer>
-				<key>line</key>
-				<integer>27</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>63</integer>
-		</dict>
-		<key>spec/swf_assembler_spec.rb</key>
+		<key>lib/swx_assembler.rb</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
 				<integer>0</integer>
 				<key>line</key>
-				<integer>22</integer>
+				<integer>26</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>24</integer>
+		</dict>
+		<key>spec/swx_assembler_spec.rb</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>14</integer>
 			</dict>
 			<key>columnSelection</key>
 			<false/>
@@ -55,25 +55,40 @@
 				<key>column</key>
 				<integer>0</integer>
 				<key>line</key>
-				<integer>20</integer>
+				<integer>11</integer>
 			</dict>
 			<key>selectTo</key>
 			<dict>
 				<key>column</key>
 				<integer>0</integer>
 				<key>line</key>
-				<integer>22</integer>
+				<integer>14</integer>
 			</dict>
+		</dict>
+		<key>testing/flash/data_test.as</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>27</integer>
+				<key>line</key>
+				<integer>25</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>lib/swf_assembler.rb</string>
-		<string>spec/swf_assembler_spec.rb</string>
+		<string>lib/swx_assembler.rb</string>
+		<string>testing/flash/data_test.as</string>
+		<string>spec/swx_assembler_spec.rb</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
-	<false/>
+	<true/>
 	<key>windowFrame</key>
-	<string>{{225, 79}, {1048, 724}}</string>
+	<string>{{10, 79}, {1048, 724}}</string>
 </dict>
 </plist>
