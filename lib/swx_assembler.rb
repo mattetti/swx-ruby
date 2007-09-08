@@ -2,7 +2,7 @@ require 'bytecode_converter'
 require 'helper_module'
 require 'zlib'
 
-class SwfAssembler
+class SwxAssembler
 	include HelperMethods
 	
 	# Header - FCS (uncompressed), version Flash 6
