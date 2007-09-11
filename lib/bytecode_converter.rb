@@ -24,6 +24,8 @@ class BytecodeConverter
 	      DataTypeCodes::BOOLEAN + '01'
 	    when NilClass
 	      '02'
+			when ActiveRecord::Base
+				convert(data.instance_values)
 	    else
 	      raise StandardError, "#{data.class} is an unhandled data type."
 	    end
@@ -47,7 +49,6 @@ class BytecodeConverter
 
 			# Add the length of the data structure to the bytecode
 			bytecode.push integer_to_bytecode(data.length)
-			
 			# Convert each element in the data structure to bytecode
 			data.each do |element|
 				
@@ -59,12 +60,14 @@ class BytecodeConverter
 
 				# Create a push of the current bytecode, if
 					 # recursing into a complex data structure
-					 #									 # or
-				if (element.is_a?(Array) || 
-					    value.is_a?(Array) || 
-						element.is_a?(Hash)  || # we're approaching the 65535 byte limit that can be stored in a single push.
-						  value.is_a?(Hash)	 || calculate_bytecode_length(bytecode) > 65518)
-						
+					 #									 							# or
+				if (element.is_a?(Array) 							|| 
+					    value.is_a?(Array)						  || 
+						element.is_a?(Hash)  							|| 
+						  value.is_a?(Hash)	 							|| 
+						element.is_a?(ActiveRecord::Base) || # we're approaching the 65535 byte limit that can be stored in a single push.
+						  value.is_a?(ActiveRecord::Base) || calculate_bytecode_length(bytecode) > 65518)
+
 					# If we haven't written any bytecode into the local
 					# buffer yet (if it's empty), or all the data is already pushed, skip writing the push statement
 					bytecode.push generate_push_statement(bytecode) unless bytecode.empty? || bytecode.last.begins_with?('96')

@@ -2,7 +2,29 @@ $:.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 require 'rubygems'
 require 'spec/runner'
 
+require 'active_record'
 require 'bytecode_converter'
+
+describe BytecodeConverter, 'in regard to ActiveRecord objects' do
+  it 'should convert an ActiveRecord object with no associations loaded to bytecode' do
+		@cheese = mock('Cheese')
+		ActiveRecord::Base.should_receive(:===).with(@cheese).and_return(true)
+		
+		@cheese.should_receive(:instance_values).and_return({'attributes'=>{'id'=>'1', 'stinkyness_id'=>'1'}})
+    BytecodeConverter.convert(@cheese)
+  end
+
+	# it 'should convert an ActiveRecord object with associations loaded to bytecode' do
+	#   @cheese = mock('Cheese')
+	# 	@stinkyness = mock('Stinkyness')
+	# 	ActiveRecord::Base.should_receive(:===).with(@cheese).and_return(true)
+	# 	ActiveRecord::Base.should_receive(:===).with(@stinkyness).and_return(true)
+	# 	
+	# 	@cheese.should_receive(:instance_values).and_return({'stinkyness'=>@stinkyness, 'attributes'=>{'id'=>'1'}})
+	# 	@stinkyness.should_receive(:instance_values).and_return({'attributes'=>{'id'=>'1'}})
+	# 	BytecodeConverter.convert(@cheese)
+	# end
+end
 
 describe BytecodeConverter, 'in regard to arrays' do
   it 'should convert "[1, 2, 3]" to bytecode' do

@@ -32,7 +32,6 @@ module HelperMethods
 
 		def generate_push_statement(bytecode)
 			unpushed_data = []
-			
 			# Iterate over the bytecode array in reverse and add all of the unpushed
 			# data to 'unpushed_data'
 			bytecode.reverse_each do |bytecode_chunk|
