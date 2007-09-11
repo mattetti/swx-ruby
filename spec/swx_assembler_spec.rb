@@ -41,3 +41,23 @@ describe 'SwxAssembler#allow_domain_bytecode' do
 	  SwxAssembler.allow_domain_bytecode.should == '960900005F706172656E74001C960600005F75726C004E960D0007010000000053797374656D001C960A00007365637572697479004E960D0000616C6C6F77446F6D61696E005217'
 	end
 end
+
+require 'zlib'
+
+describe 'SwxAssembler#compress_swx_file' do
+	before do
+	  @swx_file = '123456789'
+	end
+  it 'should remove the first eight bytes of the string before compressing' do
+		@swx_file.should_receive(:slice!).with(0...8).and_return('12345678')
+    SwxAssembler.compress_swx_file(@swx_file, 4)
+  end
+
+	it 'should compress the remainder of the string using Zlib' do
+		Zlib::Deflate.should_receive(:deflate).with(@swx_file[8..-1], 4).and_return('a compressed string')
+		SwxAssembler.compress_swx_file(@swx_file, 4)
+	end
+end
+
+
+

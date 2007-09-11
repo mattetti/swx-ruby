@@ -14,16 +14,16 @@ describe BytecodeConverter, 'in regard to ActiveRecord objects' do
     BytecodeConverter.convert(@cheese)
   end
 
-	# it 'should convert an ActiveRecord object with associations loaded to bytecode' do
-	#   @cheese = mock('Cheese')
-	# 	@stinkyness = mock('Stinkyness')
-	# 	ActiveRecord::Base.should_receive(:===).with(@cheese).and_return(true)
-	# 	ActiveRecord::Base.should_receive(:===).with(@stinkyness).and_return(true)
-	# 	
-	# 	@cheese.should_receive(:instance_values).and_return({'stinkyness'=>@stinkyness, 'attributes'=>{'id'=>'1'}})
-	# 	@stinkyness.should_receive(:instance_values).and_return({'attributes'=>{'id'=>'1'}})
-	# 	BytecodeConverter.convert(@cheese)
-	# end
+	it 'should convert an ActiveRecord object with associations loaded to bytecode' do
+	  @cheese = mock('Cheese')
+		@stinkyness = mock('Stinkyness')
+		ActiveRecord::Base.should_receive(:===).with(@cheese).and_return(true)
+		ActiveRecord::Base.should_receive(:===).with(@stinkyness).and_return(true)
+		
+		@cheese.should_receive(:instance_values).and_return({'stinkyness'=>@stinkyness, 'attributes'=>{'id'=>'1'}})
+		@stinkyness.should_receive(:instance_values).and_return({'attributes'=>{'id'=>'1'}})
+		BytecodeConverter.convert(@cheese)
+	end
 end
 
 describe BytecodeConverter, 'in regard to arrays' do
