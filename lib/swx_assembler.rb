@@ -62,7 +62,6 @@ class SwxAssembler
 			
 			# Generate a push tag if the data was not an Array or a Hash
 			data_bytecode.push generate_push_statement(data_bytecode) unless data.is_a?(Array) || data.is_a?(Hash)
-			
 			# Add the 'result' variable name -- either
 			# using the constant table if in debug mode
 			# or as a regular string otherwise
@@ -117,7 +116,6 @@ class SwxAssembler
 			@allow_domain = allow_domain
 
       swx_bytecode = generate_swx_bytecode(data)
-			
 			# Convert the bytecode string to ASCII file format
       swx_file = swx_bytecode.hex_to_ascii
 

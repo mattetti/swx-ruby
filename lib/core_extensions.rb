@@ -2,6 +2,22 @@
 # ===================
 # = Core Extensions =
 # ===================
+class Array
+  def begins_with?(string)
+    self.join.begins_with?(string)
+  end  
+end
+
+class Object
+	# Taken from ActiveRecord
+	def instance_values
+    instance_variables.inject({}) do |values, name|
+      values[name[1..-1]] = instance_variable_get(name)
+      values
+    end
+  end
+end
+
 class String
   def begins_with?(string)
     self[0..string.length-1] == string
@@ -15,12 +31,6 @@ class String
 	
 	  Object.module_eval("::#{$1}", __FILE__, __LINE__)
 	end
-
-	def each_character_with_index
-    split(//).each_with_index { |c, index|
-      yield( c, index )
-    }
-  end
 	
 	def hex_to_ascii
 		hex = self.gsub(' ', '')
@@ -37,8 +47,3 @@ class String
 	end
 end
 
-class Array
-  def begins_with?(string)
-    self.join.begins_with?(string)
-  end  
-end

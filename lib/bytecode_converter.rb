@@ -24,20 +24,21 @@ class BytecodeConverter
 	      DataTypeCodes::BOOLEAN + '01'
 	    when NilClass
 	      '02'
-			when ActiveRecord::Base
-				convert(data.instance_values)
 	    else
-	      raise StandardError, "#{data.class} is an unhandled data type."
+				# Convert the object to a hash of its instance variables 
+				object_hash = data.instance_values
+				if object_hash.empty?	
+					raise StandardError, "#{data.class} is an unhandled data type."
+				else
+		      convert(object_hash)
+				end
 	    end
 	  end
 	
-
- 
 	  protected
 		# ================================
 		# = Data Type Conversion Methods =
 		# ================================
-		
 		def complex_data_structure_to_bytecode(data)
 			bytecode = []
 			
@@ -98,12 +99,12 @@ class BytecodeConverter
 		end
 	
 		def float_to_bytecode(float)
-			binary = [float].pack('E')[0..-1]
+			binary = [*float].pack('E')
 			ascii_codes = []
-			binary.each_character_with_index { |character, index| ascii_codes << binary[index] }
+			binary.each_byte { |byte| ascii_codes << byte }
 			hex_codes = []
 			ascii_codes.each { |ascii_code| hex_codes << '%02X' % ascii_code }
-																# Aral did this in SWX PHP, so I'm doing it here
+															# Aral did this in SWX PHP, so I'm doing it here
 			DataTypeCodes::FLOAT + (hex_codes[4..-1] + hex_codes[0..3]).join
 		end
 	

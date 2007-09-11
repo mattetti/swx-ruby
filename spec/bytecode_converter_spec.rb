@@ -5,27 +5,6 @@ require 'spec/runner'
 require 'active_record'
 require 'bytecode_converter'
 
-describe BytecodeConverter, 'in regard to ActiveRecord objects' do
-  it 'should convert an ActiveRecord object with no associations loaded to bytecode' do
-		@cheese = mock('Cheese')
-		ActiveRecord::Base.should_receive(:===).with(@cheese).and_return(true)
-		
-		@cheese.should_receive(:instance_values).and_return({'attributes'=>{'id'=>'1', 'stinkyness_id'=>'1'}})
-    BytecodeConverter.convert(@cheese)
-  end
-
-	it 'should convert an ActiveRecord object with associations loaded to bytecode' do
-	  @cheese = mock('Cheese')
-		@stinkyness = mock('Stinkyness')
-		ActiveRecord::Base.should_receive(:===).with(@cheese).and_return(true)
-		ActiveRecord::Base.should_receive(:===).with(@stinkyness).and_return(true)
-		
-		@cheese.should_receive(:instance_values).and_return({'stinkyness'=>@stinkyness, 'attributes'=>{'id'=>'1'}})
-		@stinkyness.should_receive(:instance_values).and_return({'attributes'=>{'id'=>'1'}})
-		BytecodeConverter.convert(@cheese)
-	end
-end
-
 describe BytecodeConverter, 'in regard to arrays' do
   it 'should convert "[1, 2, 3]" to bytecode' do
       BytecodeConverter.convert([1, 2, 3]).should == '961400070300000007020000000701000000070300000042'
@@ -66,6 +45,17 @@ describe BytecodeConverter, 'in regard to booleans' do
   end
 end
 
+describe BytecodeConverter, 'in regard to custom classes' do
+  it 'should convert the class to a hash by calling CustomClass#instance_values' do
+		@custom_class = mock('MyCustomClass')
+		# BytecodeConverter.should_receive(:convert).with(@custom_class)
+		@custom_class.should_receive(:instance_values).and_return({'it' => 'works'})
+		# BytecodeConverter.should_receive(:convert).with({'it' => 'works'})
+		
+    BytecodeConverter.convert(@custom_class)
+  end
+end
+
 describe BytecodeConverter, 'in regard to floats' do
 	it 'should convert "-0.123456789" to bytecode' do
 	  BytecodeConverter.convert(-0.123456789).should == '06DD9ABFBF5F633937'
@@ -73,6 +63,10 @@ describe BytecodeConverter, 'in regard to floats' do
 	
 	it 'should convert "1.2" to bytecode' do
 		BytecodeConverter.convert(1.2).should == '063333F33F33333333'
+	end
+	
+	it 'should convert "42.12345" to bytecode' do
+	  BytecodeConverter.convert(42.12345).should == '06CD0F45407958A835'
 	end
 end
 

@@ -15,7 +15,7 @@ describe SwxAssembler do
     SwxAssembler.write_swf(1, true, 0).should == File.read(File.join(File.dirname(__FILE__), 'fixtures', 'number_one_with_debug_no_compression.swx'))
   end
   
-	it 'should assemble a swx file without debugging, without compression, and with an arbitrary allow domain url' do
+	it 'should assemble a swx file without debugging, without compression, and with an arbitrary "allow domain" url' do
 		BytecodeConverter.should_receive(:convert).with('file://Macintosh HD/Users/Jed/Development/Libraries/rSWX/testing/flash/data_testing.swf').once.and_return('0066696C653A2F2F4D6163696E746F73682048442F55736572732F4A65642F446576656C6F706D656E742F4C69627261726965732F725357582F74657374696E672F666C6173682F646174615F74657374696E672E73776600')
 		BytecodeConverter.should_receive(:convert).with(1).once.and_return('0701000000')
 	  SwxAssembler.write_swf(1, false, 0, 'file:///Macintosh HD/Users/Jed/Development/Libraries/rSWX/testing/flash/data_testing.swf').should == File.read(File.join(File.dirname(__FILE__), 'fixtures', 'number_one_no_debug_no_compression_arbitrary_allow_domain.swx'))

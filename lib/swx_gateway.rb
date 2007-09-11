@@ -1,5 +1,6 @@
 require 'json'
 require 'swx_assembler'
+require 'unroller'
 require 'yaml'
 
 class SwxGateway
@@ -25,10 +26,10 @@ class SwxGateway
 			# ================================================================
 			# = TODO: cleanup code that determines whether to send arguments =
 			# ================================================================
-      service_class_response = json_to_ruby(params[:arguments]) ? service_class.new.send(params[:method], json_to_ruby(params[:arguments])) : service_class.new.send(params[:method])
+      service_class_response = json_to_ruby(params[:arguments]) ? service_class.new.send(params[:method].underscore, json_to_ruby(params[:arguments])) : service_class.new.send(params[:method].underscore)
         
       # assemble swx file and return it
-      SwxAssembler.write_swf(service_class_response, params[:debug], SWX_CONFIG['compression_level'], params[:url], SWX_CONFIG['allow_domain'])
+			SwxAssembler.write_swf(service_class_response, params[:debug], SWX_CONFIG['compression_level'], params[:url], SWX_CONFIG['allow_domain'])
     end
     
     def json_to_ruby(arguments)

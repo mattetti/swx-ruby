@@ -11,7 +11,7 @@ Spec::Rake::SpecTask.new('examples_with_rcov') do |t|
 end
 
 desc 'Verify that spec coverage is 100%'
-RCov::VerifyTask.new(:verify_rcov => :examples_with_rcov) do |t|
+RCov::VerifyTask.new(:rcov => :examples_with_rcov) do |t|
   t.threshold = 100.0
   t.index_html = './coverage/index.html'
 end
