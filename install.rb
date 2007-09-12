@@ -34,6 +34,7 @@ begin
 	end
 	
 	# Add route for rSWX gateway to routes.rb
+	puts '*** Adding route for rSWX gateway to routes.rb ***'
 	sentinel = 'ActionController::Routing::Routes.draw do |map|'
 	gsub_file './config/routes.rb', /(#{Regexp.escape(sentinel)})/mi do |match|
 	  "#{match}\n  map.swx '/swx', :controller => 'swx', :action => 'gateway'\n"
