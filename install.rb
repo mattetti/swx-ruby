@@ -7,9 +7,12 @@ end
 
 @what_now = <<-INSTRUCTIONS
 
+=======================================
 SWX Ruby: SWX on Rails Plugin Alpha 0.1
 =======================================
 
+GETTING STARTED
+===============
 SWX on Rails will look for your service classes in RAILS_ROOT/app/services.
 You'll create standard Ruby classes in files by the same name 
 (i.e. MyFunkyClass goes in app/services/my_funky_class.rb). Service classes 
@@ -37,8 +40,9 @@ http://swxformat.org/download/ to grab the SWX ActionScript library.
 Oh yeah, you may return ActiveRecord objects from your service classes; 
 SWX on Rails will happily serialize them for you. Go ahead, give it a try!
 
-Feel free to torture this plugin; please send bug reports/suggestions
-to jedhurt@cableone.net. Full-featured tracker and mailing lists coming soon.
+SWX on Rails is very alpha and may break, throw its toys, eat your
+firstborn child, etc.; please send bug reports/suggestions to 
+jedhurt@cableone.net. Full-featured tracker and mailing lists coming soon.
 =======================================
 
 
