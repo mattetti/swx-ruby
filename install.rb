@@ -21,11 +21,12 @@ class, call the specified method, and send the response back to the Flash Player
 
 Take a peek at app/services/hello_world.rb for a working service class example. 
 Here's a Moo card-esque example to call HelloWorld#just_say_the_words from the 
-Flash Player (place a MovieClip on stage with an instance name of 'loader'):
+Flash Player (place a MovieClip on stage with an instance name of 'loader' and
+fire up your development server):
 
 //------------------------------------------------------
 loader.serviceClass = "HelloWorld";
-loader.method = "justSayTheWords";
+loader.method = "just_say_the_words";
 loader.debug = true;
 loader.loadMovie("http://localhost:3000/swx", "POST");
 
@@ -78,7 +79,7 @@ begin
 	end
 	
 	# Copy HelloWorld class to app/services
-	unless File.exist?('./app/services/test_data_types.rb')
+	unless File.exist?('./app/services/hello_world.rb')
 		puts '*** Copying HelloWorld service class to app/services ***'
 		cp('./vendor/plugins/swx_on_rails/lib/services/hello_world.rb','./app/services/hello_world.rb')
 	end
