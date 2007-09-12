@@ -1,32 +1,61 @@
 $:.unshift File.join(File.dirname(__FILE__), '..', 'lib')
+$:.unshift File.join(File.dirname(__FILE__), '..', 'lib', 'services')
 require 'rubygems'
 require 'spec/runner'
 
 require 'swx_gateway'
 
+module SwxGatewaySpecHelper
+	def configure_swx_gateway
+		SwxGateway.app_root = './'
+		SwxGateway.swx_config = {
+			'services_path' 		 => File.join('./', 'lib', 'services'), 
+			'allow_domain' 		 => true, 
+			'compression_level' => 4
+		}
+	end
+end
+
 describe 'SwxGateway#init_service_class' do
+	include SwxGatewaySpecHelper
+	
+	before do
+	  configure_swx_gateway
+	end
+	
 	it 'should return the class constant for the specified service class' do
-		result = SwxGateway.init_service_class('SwxCheese')
-		result.should be(SwxCheese)
+		result = SwxGateway.init_service_class('HelloWorld')
+		result.should be(HelloWorld)
 	end
 end
 
 describe 'SwxGateway#json_to_ruby' do
+	include SwxGatewaySpecHelper
+	
+	before do
+	  configure_swx_gateway
+	end
+	
   it 'should convert a JSON string to a native Ruby object' do
     SwxGateway.json_to_ruby(%q([1,2,{"a":3.141},false,true,null,"4..10"])).should == [1, 2, {"a"=>3.141}, false, true, nil, "4..10"]
   end
 end
 
 describe 'SwxGateway#process' do
+	include SwxGatewaySpecHelper
+	
+	before do
+	  configure_swx_gateway
+	end
+	
 	it 'should process a hash of params and call SwxAssembler#write_swf with them' do
-		cheesy_response = [{:id => '1'}, {:id => '2'}]
+		require 'hello_world'
+		hello_world = mock(HelloWorld)
+		hello_world.should_receive(:send).with('just_say_the_words').and_return('Hello World!')
+		HelloWorld.should_receive(:new).and_return(hello_world)
 		
-		swx_cheese = mock(SwxCheese)
-		swx_cheese.should_receive(:send).with('all_cheeses').and_return(cheesy_response)
-		SwxCheese.should_receive(:new).and_return(swx_cheese)
+		SwxAssembler.should_receive(:write_swf).with('Hello World!', nil, 4, nil, true)
 		
-		SwxAssembler.should_receive(:write_swf).with(cheesy_response, nil, 4, nil, true)
-		
-	  SwxGateway.process(:serviceClass => 'SwxCheese', :method => 'all_cheeses')
+	  SwxGateway.process(:serviceClass => 'HelloWorld', :method => 'justSayTheWords')
 	end
 end

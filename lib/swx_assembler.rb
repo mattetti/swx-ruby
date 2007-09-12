@@ -57,11 +57,12 @@ class SwxAssembler
 			# Add a flag to the beginning of the bytecode that tells Flash we're setting a variable (result)
 			data_bytecode.push ActionCodes::SET_VARIABLE
 						
-			# Convert the data structure to bytecode
+			# Convert the data (payload) to bytecode
 			data_bytecode.push BytecodeConverter.convert(data)
 			
 			# Generate a push tag if the data was not an Array or a Hash
 			data_bytecode.push generate_push_statement(data_bytecode) unless data.is_a?(Array) || data.is_a?(Hash)
+			
 			# Add the 'result' variable name -- either
 			# using the constant table if in debug mode
 			# or as a regular string otherwise
@@ -82,7 +83,7 @@ class SwxAssembler
 			# Wrap the data bytecode in debug flags if debugging is turned on
 			do_action_block.push DEBUG_START if @debug
 			
-			# Convert the data to bytecode
+			# Generate bytecode for the data (payload)
 			do_action_block.push generate_data_bytecode(data)
       
 			# Allow domain? If so add allow domain statement to the SWF
@@ -109,13 +110,14 @@ class SwxAssembler
 	  end
 	  
 		def write_swf(data, debug=false, compression_level=4, allow_domain_url='', allow_domain=true)
-		  # Set up SwfAssembler states
+		  # Set up SwfAssembler state
 		  @debug = debug
 		  @compression_level = compression_level
 		  @allow_domain_url = allow_domain_url
 			@allow_domain = allow_domain
 
       swx_bytecode = generate_swx_bytecode(data)
+
 			# Convert the bytecode string to ASCII file format
       swx_file = swx_bytecode.hex_to_ascii
 
@@ -125,7 +127,7 @@ class SwxAssembler
       # ====================================
       # = TODO: Remove this before release =
       # ====================================
-      # Write the file (for testing in Flash)
+      # Write the file (for manual 'loadMovie' testing in Flash)
       # File.open('/Users/Jed/Development/Libraries/rSWX/testing/flash/rswx_data.swx', 'w+') do |file|
       #   file << swx_file
       # end      
