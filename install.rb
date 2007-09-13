@@ -18,7 +18,19 @@ Simply create standard Ruby classes and drop them in this folder. Service classe
 are composed of instance methods. SWX on Rails will instantiate your service
 class, call the specified method, and send the response back to the Flash Player.
 
-Take a peek at app/services/hello_world.rb for a working service class example. 
+Take a peek at app/services/hello_world.rb for a working service class example.
+Alright, alright, I'll just show it to you here:
+
+# hello_world.rb-----------------------------------------
+# Class and method names follow standard Ruby conventions.
+class HelloWorld
+	# Service class methods are instance methods.
+	def just_say_the_words
+		'Hello World!'
+	end
+end
+#--------------------------------------------------------
+
 Here's a Moo card-esque example to call HelloWorld#just_say_the_words from the 
 Flash Player (place a MovieClip on stage with an instance name of 'loader' and
 fire up your development server):
@@ -30,6 +42,7 @@ loader.debug = true;
 loader.loadMovie("http://localhost:3000/swx", "POST");
 
 function onEnterFrame() {
+ // Will output 'Hello World!' once the SWX file is loaded.
  trace(loader.result);
 }
 //------------------------------------------------------
