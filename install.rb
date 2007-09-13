@@ -21,15 +21,15 @@ class, call the specified method, and send the response back to the Flash Player
 Take a peek at app/services/hello_world.rb for a working service class example.
 Alright, alright, I'll just show it to you here:
 
-# hello_world.rb-----------------------------------------
-# Class and method names follow standard Ruby conventions.
+# hello_world.rb----------------------------------------
+# Class and method names follow standard Ruby convention
 class HelloWorld
 	# Service class methods are instance methods.
 	def just_say_the_words
 		'Hello World!'
 	end
 end
-#--------------------------------------------------------
+#-------------------------------------------------------
 
 Here's a Moo card-esque example to call HelloWorld#just_say_the_words from the 
 Flash Player (place a MovieClip on stage with an instance name of 'loader' and
@@ -37,7 +37,9 @@ fire up your development server):
 
 //------------------------------------------------------
 loader.serviceClass = "HelloWorld";
-loader.method = "just_say_the_words";
+// Method names follow ActionScript convention 
+// (converted to underscored server-side)
+loader.method = "justSayTheWords";
 loader.debug = true;
 loader.loadMovie("http://localhost:3000/swx", "POST");
 
