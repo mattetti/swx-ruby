@@ -14,8 +14,7 @@ SWX Ruby: SWX on Rails Plugin Alpha 0.1
 GETTING STARTED
 ===============
 SWX on Rails will look for your service classes in RAILS_ROOT/app/services.
-You'll create standard Ruby classes in files by the same name 
-(i.e. MyFunkyClass goes in app/services/my_funky_class.rb). Service classes 
+Simply create standard Ruby classes and drop them in this folder. Service classes 
 are composed of instance methods. SWX on Rails will instantiate your service
 class, call the specified method, and send the response back to the Flash Player.
 
