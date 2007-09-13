@@ -4,6 +4,7 @@ require 'spec/runner'
 
 require 'active_record'
 require 'bytecode_converter'
+require 'date'
 
 describe BytecodeConverter, 'in regard to arrays' do
   it 'should convert "[1, 2, 3]" to bytecode' do
@@ -53,6 +54,20 @@ describe BytecodeConverter, 'in regard to custom classes' do
 		# BytecodeConverter.should_receive(:convert).with({'it' => 'works'})
 		
     BytecodeConverter.convert(@custom_class)
+  end
+end
+
+describe BytecodeConverter, 'in regard to datetimes' do
+  it 'should convert a datetime to a string and pass it to BytecodeConverter#string_to_bytecode' do
+    BytecodeConverter.should_receive(:string_to_bytecode).with('Sunday September 09, 2007 at 12:30 PM')
+		BytecodeConverter.convert(DateTime.new(2007, 9, 9, 12, 30))
+  end
+end
+
+describe BytecodeConverter, 'in regard to dates' do
+  it 'should convert a date to a string and pass it to BytecodeConverter#string_to_bytecode' do
+		BytecodeConverter.should_receive(:string_to_bytecode).with('Sunday September 09, 2007')
+		BytecodeConverter.convert(Date.new(2007, 9, 9))
   end
 end
 
@@ -128,6 +143,6 @@ end
     
 describe BytecodeConverter, 'in regard to unhandled datatypes' do
   it 'should raise an exception when asked to convert an unhandled data type' do
-    lambda { BytecodeConverter.convert(/^what about (me)?$/) }.should raise_error(StandardError)
+    lambda { BytecodeConverter.convert(/^What about (me)?$/) }.should raise_error(StandardError)
   end
 end  

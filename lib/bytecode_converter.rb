@@ -1,4 +1,5 @@
 require 'core_extensions'
+require 'date'
 require 'helper_module'
 
 class BytecodeConverter
@@ -6,12 +7,20 @@ class BytecodeConverter
   class << self
 	  NULL_TERMINATOR = '00'
 	
-		COMPLEX_DATA_STRUCTURES = [Array, Hash]
-
 	  def convert(data)
 	    case data
-	    when *COMPLEX_DATA_STRUCTURES
+	    when Array, Hash
 				complex_data_structure_to_bytecode(data)
+			when DateTime
+				# ======================================================
+				# = TODO: Convert to an instance of Flash's Date class =
+				# ======================================================
+				string_to_bytecode(data.strftime('%A %B %d, %Y at %I:%M %p'))
+			when Date
+				# ======================================================
+				# = TODO: Convert to an instance of Flash's Date class =
+				# ======================================================
+				string_to_bytecode(data.strftime('%A %B %d, %Y'))
 			when Float
 				float_to_bytecode(data)
 			when Integer
@@ -27,10 +36,11 @@ class BytecodeConverter
 	    else
 				# Convert the object to a hash of its instance variables 
 				object_hash = data.instance_values
+				
 				if object_hash.empty?	
 					raise StandardError, "#{data.class} is an unhandled data type."
 				else
-		      convert(object_hash)
+		      complex_data_structure_to_bytecode(object_hash)
 				end
 	    end
 	  end
