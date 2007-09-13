@@ -23,9 +23,10 @@ describe 'SwxGateway#init_service_class' do
 	  configure_swx_gateway
 	end
 	
-	it 'should return the class constant for the specified service class' do
-		result = SwxGateway.init_service_class('HelloWorld')
-		result.should be(HelloWorld)
+	it 'should initialize all of the service classes in the service classes folder' do
+		SwxGateway.init_service_classes
+		lambda { HelloWorld }.should_not raise_error(NameError)
+		lambda { TestDataTypes }.should_not raise_error(NameError)
 	end
 end
 

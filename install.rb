@@ -45,7 +45,9 @@ SWX on Rails is very alpha and may break, throw its toys, eat your
 firstborn child, etc.; please send bug reports/suggestions to 
 jedhurt@cableone.net. Full-featured tracker and mailing lists coming soon.
 =======================================
-
+NOTE: You may notice some Security Sandbox Violations when testing the example
+above in the Flash IDE. Rest assured, this is OK. Visit 
+http://swxformat.org/132 for further explanation.
 
 
 INSTRUCTIONS

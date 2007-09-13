@@ -5,16 +5,12 @@ class SwxGateway
   class << self
 		attr_accessor :app_root, :swx_config
 		
-		# ===========================================================================
-		# = TODO: Refactor: Require all files in service_path at app initialization =
-		# ===========================================================================
-		def init_service_class(service_class) #:nodoc:
-			klass = File.join(app_root, swx_config['services_path'], service_class.underscore)
-			# ==================================================
-			# = TODO: Exeception handling if class isn't found =
-			# ==================================================
-      require klass
-      service_class.constantize
+		def init_service_classes #:nodoc:
+			puts "# ===============================
+			# = init_service_classes called =
+			# ==============================="
+			Dir.glob(File.join(app_root, swx_config['services_path'], './**/*.rb'))	{ |filename| require filename }
+			true
 		end
 		
 		# The entry point for SWX request processing. Takes a hash of +params+ and goes to work generating SWX bytecode. 
@@ -41,8 +37,11 @@ class SwxGateway
 	  # # calls params[:method].underscore
 	  # # => A binary string of SWX bytecode containing the result of +Simple.new#add_numbers(1, 2)+; no debugging and allowing access from the specified url
     def process(params)
+			# Call init_service_classes the first time SwxGateway#process is called
+			@service_classes_initialized ||= init_service_classes
+			
 			# Fetch the class contant for the specified service class
-      service_class = init_service_class(params[:serviceClass])
+      service_class = params[:serviceClass].constantize
 
 			# convert camelCased params[:method] to underscored (does nothing if params[:method] is already underscored)
 			params[:method] = params[:method].underscore
