@@ -6,9 +6,6 @@ class SwxGateway
 		attr_accessor :app_root, :swx_config
 		
 		def init_service_classes #:nodoc:
-			puts "# ===============================
-			# = init_service_classes called =
-			# ==============================="
 			Dir.glob(File.join(app_root, swx_config['services_path'], './**/*.rb'))	{ |filename| require filename }
 			true
 		end

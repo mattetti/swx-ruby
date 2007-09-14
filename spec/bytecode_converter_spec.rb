@@ -7,33 +7,33 @@ require 'bytecode_converter'
 require 'date'
 
 describe BytecodeConverter, 'in regard to arrays' do
-  it 'should convert "[1, 2, 3]" to bytecode' do
-      BytecodeConverter.convert([1, 2, 3]).should == '961400070300000007020000000701000000070300000042'
-    end
-  
-  it %q(should convert "['one', 'two', 'three']" to bytecode) do
-    BytecodeConverter.convert(['one', 'two', 'three']).should == '961600007468726565000074776F00006F6E6500070300000042'
-  end
-  
-     it %q(should convert "[1, 'two', 3.5]" to bytecode) do
-      BytecodeConverter.convert([1, 'two', 3.5]).should == '9618000600000C40000000000074776F000701000000070300000042'
-    end
-     
-    it %q(should convert "[1, ['two', 3.5]]" to bytecode) do
-      BytecodeConverter.convert([1, ['two', 3.5]]).should == '9613000600000C40000000000074776F00070200000042960A000701000000070200000042'
-    end
-  
-  it %q(should convert "[[1], 'two', 3.5]" to bytecode) do
-    BytecodeConverter.convert([[1], 'two', 3.5]).should == '960E000600000C40000000000074776F00960A000701000000070100000042960500070300000042'
-  end
-   
-   it %q(should convert "[1, {'number' => 2}, 3]") do
-     BytecodeConverter.convert([1, {'number' => 2}, 3]).should == '9605000703000000961200006E756D626572000702000000070100000043960A000701000000070300000042'
-   end
-     
-   it %q(should convert "[1, {'numbers' => [{'two' => 2}, {'three' => 3}]}, 4]") do
-     BytecodeConverter.convert([1, {'numbers' => [{'two' => 2}, {'three' => 3}]}, 4]).should == '9605000704000000960900006E756D6265727300961100007468726565000703000000070100000043960F000074776F000702000000070100000043960500070200000042960500070100000043960A000701000000070300000042'
-   end	
+	it 'should convert an array of integers to bytecode' do
+		BytecodeConverter.convert([1, 2, 3]).should == '961400070300000007020000000701000000070300000042'
+	end
+
+	it %q(should convert an array of strings to bytecode) do
+		BytecodeConverter.convert(['one', 'two', 'three']).should == '961600007468726565000074776F00006F6E6500070300000042'
+	end
+
+	it %q(should convert an array of mixed datatypes to bytecode) do
+		BytecodeConverter.convert([1, 'two', 3.5]).should == '9618000600000C40000000000074776F000701000000070300000042'
+	end
+
+	it %q(should convert nested arrays to bytecode) do
+		BytecodeConverter.convert([1, ['two', 3.5]]).should == '9613000600000C40000000000074776F00070200000042960A000701000000070200000042'
+	end
+
+	it %q(should convert more nested arrays to bytecode) do
+		BytecodeConverter.convert([[1], 'two', 3.5]).should == '960E000600000C40000000000074776F00960A000701000000070100000042960500070300000042'
+	end
+
+	it %q(should convert an array with nested hashes to bytecode) do
+		BytecodeConverter.convert([1, {'number' => 2}, 3]).should == '9605000703000000961200006E756D626572000702000000070100000043960A000701000000070300000042'
+	end
+
+	it %q(should convert an array with nested hashes with nested arrays to bytecode) do
+		BytecodeConverter.convert([1, {'numbers' => [{'two' => 2}, {'three' => 3}]}, 4]).should == '9605000704000000960900006E756D6265727300961100007468726565000703000000070100000043960F000074776F000702000000070100000043960500070200000042960500070100000043960A000701000000070300000042'
+	end	
 end
 
 describe BytecodeConverter, 'in regard to booleans' do
@@ -59,42 +59,34 @@ end
 
 describe BytecodeConverter, 'in regard to datetimes' do
   it 'should convert a datetime to a string and pass it to BytecodeConverter#string_to_bytecode' do
-    BytecodeConverter.should_receive(:string_to_bytecode).with('Sunday September 09, 2007 at 12:30 PM')
+    BytecodeConverter.should_receive(:string_to_bytecode).with(an_instance_of(String))
 		BytecodeConverter.convert(DateTime.new(2007, 9, 9, 12, 30))
   end
 end
 
 describe BytecodeConverter, 'in regard to dates' do
   it 'should convert a date to a string and pass it to BytecodeConverter#string_to_bytecode' do
-		BytecodeConverter.should_receive(:string_to_bytecode).with('Sunday September 09, 2007')
+		BytecodeConverter.should_receive(:string_to_bytecode).with(an_instance_of(String))
 		BytecodeConverter.convert(Date.new(2007, 9, 9))
   end
 end
 
 describe BytecodeConverter, 'in regard to floats' do
-	it 'should convert "-0.123456789" to bytecode' do
+	it 'should convert negative floats to bytecode' do
 	  BytecodeConverter.convert(-0.123456789).should == '06DD9ABFBF5F633937'
 	end
 	
-	it 'should convert "1.2" to bytecode' do
+	it 'should convert floats to bytecode' do
 		BytecodeConverter.convert(1.2).should == '063333F33F33333333'
-	end
-	
-	it 'should convert "42.12345" to bytecode' do
-	  BytecodeConverter.convert(42.12345).should == '06CD0F45407958A835'
-	end
+	end	
 end
 
 describe BytecodeConverter, 'in regard to hashes' do
-  it %q[should convert {'it' => 'works', 'number' => 42} to bytecode] do
+  it %q[should convert a hash with string and integer values to bytecode] do
     BytecodeConverter.convert({'it' => 'works', 'number' => 42}).should == '961D00006E756D62657200072A0000000069740000776F726B7300070200000043'
   end
 
-  it %q[should convert {'numbers' => [1]} to bytecode] do
-    BytecodeConverter.convert({'numbers' => [1]}).should == '960900006E756D6265727300960A000701000000070100000042960500070100000043'
-  end
-  
-  it %q[should convert {'they' => ['really', 'work'], 'numbers' => [1, 2, 3]} to bytecode] do
+  it %q[should convert a hash with nested arrays to bytecode] do
     BytecodeConverter.convert({'they' => ['really', 'work'], 'numbers' => [1, 2, 3]}).should == '960900006E756D626572730096140007030000000702000000070100000007030000004296060000746865790096130000776F726B00007265616C6C7900070200000042960500070200000043'
   end
 end
@@ -136,7 +128,7 @@ describe BytecodeConverter, 'in regard to strings' do
     BytecodeConverter.convert('goodbye').should == '00676F6F6462796500'
   end
 
-  it 'should convert "" to bytecode' do
+  it 'should convert an empty string to bytecode' do
     BytecodeConverter.convert('').should == '0000'
   end
 end
