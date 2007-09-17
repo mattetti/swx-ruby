@@ -15,12 +15,14 @@ class BytecodeConverter
 				# ======================================================
 				# = TODO: Convert to an instance of Flash's Date class =
 				# ======================================================
-				string_to_bytecode(data.strftime('%A %B %d, %Y at %I:%M %p'))
+				# Format: 2006-09-14 02:21:10
+				string_to_bytecode(data.strftime('%Y-%m-%d %I:%M:%S'))
 			when Date
 				# ======================================================
 				# = TODO: Convert to an instance of Flash's Date class =
 				# ======================================================
-				string_to_bytecode(data.strftime('%A %B %d, %Y'))
+				# Format: 2006-09-14
+				string_to_bytecode(data.strftime('%Y-%m-%d'))
 			when Float
 				float_to_bytecode(data)
 			when Integer
