@@ -25,8 +25,8 @@ describe 'SwxGateway#init_service_class' do
 	
 	it 'should initialize all of the service classes in the service classes folder' do
 		SwxGateway.init_service_classes
-		lambda { HelloWorld }.should_not raise_error(NameError)
-		lambda { TestDataTypes }.should_not raise_error(NameError)
+		lambda { SwxServiceClasses::HelloWorld }.should_not raise_error(NameError)
+		lambda { SwxServiceClasses::TestDataTypes }.should_not raise_error(NameError)
 	end
 end
 
@@ -51,9 +51,11 @@ describe 'SwxGateway#process' do
 	
 	it 'should process a hash of params and call SwxAssembler#write_swf with them' do
 		require 'hello_world'
-		hello_world = mock(HelloWorld)
+		swx_service_classes = mock(SwxServiceClasses)
+		hello_world = mock(SwxServiceClasses::HelloWorld)
+		
 		hello_world.should_receive(:send).with('just_say_the_words').and_return('Hello World!')
-		HelloWorld.should_receive(:new).and_return(hello_world)
+		SwxServiceClasses::HelloWorld.should_receive(:new).and_return(hello_world)
 		
 		SwxAssembler.should_receive(:write_swf).with('Hello World!', nil, 4, nil, true)
 		

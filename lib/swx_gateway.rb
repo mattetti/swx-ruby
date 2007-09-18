@@ -1,12 +1,20 @@
 require 'json'
 require 'swx_assembler'
 
+# Create a namespace (sandbox) for SWX service classes; ensures we don't get 
+# any bored twelve year-olds trying to call Kernel#system using our gateway
+# (they would instead be calling SwxServiceClasses::Kernel#system)
+module SwxServiceClasses; end
+
 class SwxGateway
   class << self
 		attr_accessor :app_root, :swx_config
 		
-		def init_service_classes #:nodoc:
-			Dir.glob(File.join(app_root, swx_config['services_path'], './**/*.rb'))	{ |filename| require filename }
+		def init_service_classes
+			Dir.glob(File.join(app_root, swx_config['services_path'], './**/*.rb'))	do |filename| 
+				# Load service class into SwxServiceClasses namespace. 
+				SwxServiceClasses.module_eval(File.read(filename))
+			end
 			true
 		end
 		
@@ -38,7 +46,7 @@ class SwxGateway
 			@service_classes_initialized ||= init_service_classes
 			
 			# Fetch the class contant for the specified service class
-      service_class = params[:serviceClass].constantize
+      service_class = "SwxServiceClasses::#{params[:serviceClass]}".constantize
 
 			# convert camelCased params[:method] to underscored (does nothing if params[:method] is already underscored)
 			params[:method] = params[:method].underscore
