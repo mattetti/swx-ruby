@@ -56,8 +56,9 @@ Oh yeah, you may return ActiveRecord objects from your service classes;
 SWX on Rails will happily serialize them for you. Go ahead, give it a try!
 
 SWX on Rails is very alpha and may break, throw its toys, eat your
-firstborn child, etc.; please send bug reports/suggestions to 
-jedhurt@cableone.net. Full-featured tracker and mailing lists coming soon.
+firstborn child, etc.; it is sure to be full of gaping security holes. DO NOT
+open an Alpha 0.1 gateway to untrusted data! Please post bug reports/suggestions to 
+http://groups.google.com/group/swxruby. Full-featured tracker coming soon.
 =======================================
 NOTE: You may notice some Security Sandbox Violations when testing the example
 above in the Flash IDE. Rest assured, this is OK. Visit 
