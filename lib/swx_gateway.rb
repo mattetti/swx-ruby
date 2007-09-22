@@ -18,6 +18,14 @@ class SwxGateway
 			true
 		end
 		
+		# Convert strings containing 'null' to nil. Null in Flash is equivalent to nil in Ruby.
+		def nillify_nulls(args_array)
+			# Convert all strings containing 'null' to nil
+			args_array.collect! { |arg| if arg == 'null' then nil else arg end }
+			# Return nil if the args array contained only 'null' strings
+			if args_array.compact.empty? then nil else args_array end
+		end
+		
 		# The entry point for SWX request processing. Takes a hash of +params+ and goes to work generating SWX bytecode. 
     # 
 		# Special note: Contrary to Ruby convention, keys in the +params+ hash are camelCase (instead of underscored). This 
@@ -46,13 +54,17 @@ class SwxGateway
 			@service_classes_initialized ||= init_service_classes
 			
 			# Fetch the class contant for the specified service class
-      service_class = "SwxServiceClasses::#{params[:serviceClass]}".constantize
+			validate_service_class_name(params[:serviceClass])
+      service_class = class_eval("SwxServiceClasses::#{params[:serviceClass]}")
 
 			# convert camelCased params[:method] to underscored (does nothing if params[:method] is already underscored)
 			params[:method] = params[:method].underscore
 
 			# convert JSON arguments to a Ruby object
 			args = json_to_ruby params[:args]
+			
+			# Convert 'null' strings in args array to nil
+			args = nillify_nulls(args) unless args.nil?
 			
 			# ================================================================================
 			# = TODO: Exception handling if specified method does not exist in service class =
@@ -63,7 +75,7 @@ class SwxGateway
 	      service_class.new.send(params[:method])
 			else
 				# Call the service class' method and pass in the arguments (uses an * to pass an array as multiple arguments)
-	      service_class.new.send(params[:method], *json_to_ruby(params[:args]))
+	      service_class.new.send(params[:method], *args)
 			end
         
       # assemble and return swx file 
@@ -73,5 +85,11 @@ class SwxGateway
     def json_to_ruby(arguments) #:nodoc:
       JSON.parse arguments unless arguments.nil? || arguments.empty?
     end
+
+		def validate_service_class_name(service_class) #:nodoc:
+			unless /\A(?:::)?([A-Z]\w*(?:::[A-Z]\w*)*)\z/ =~ service_class
+		    raise NameError, "#{service_class.inspect} is not a valid constant name!"
+		  end
+		end
   end
 end
