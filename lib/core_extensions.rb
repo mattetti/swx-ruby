@@ -6,19 +6,6 @@ class Array
   def begins_with?(string)
     self.join.begins_with?(string)
   end
-
-	# Taken from ActiveSupport
-	# Extract options from a set of arguments. Removes and returns the last element in the array if it's a hash, otherwise returns a blank hash.
-  #
-  #   def options(*args)
-  #     args.extract_options!
-  #   end
-  #
-  #   options(1, 2)           # => {}
-  #   options(1, 2, :a => :b) # => {:a=>:b}
-  def extract_options!
-    last.is_a?(::Hash) ? pop : {}
-  end  
 end
 
 class Object
@@ -36,15 +23,6 @@ class String
     self[0..string.length-1] == string
   end
   
-	# Taken from Rails' Inflector module
-	def constantize
-	  unless /\A(?:::)?([A-Z]\w*(?:::[A-Z]\w*)*)\z/ =~ self
-	    raise NameError, "#{self.inspect} is not a valid constant name!"
-	  end
-	
-	  Object.module_eval("::#{$1}", __FILE__, __LINE__)
-	end
-	
 	def hex_to_ascii
 		hex = self.gsub(' ', '')
 		[hex].pack('H*')
