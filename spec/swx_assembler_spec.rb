@@ -21,15 +21,15 @@ describe SwxAssembler do
 	  SwxAssembler.write_swf(1, false, 0, 'file:///Macintosh HD/Users/Jed/Development/Libraries/rSWX/testing/flash/data_testing.swf').should == File.read(File.join(File.dirname(__FILE__), 'fixtures', 'number_one_no_debug_no_compression_arbitrary_allow_domain.swx'))
 	end
 
-  it 'should assemble a swx file without debugging and with compression' # do
-	#   BytecodeConverter.should_receive(:convert).with(1).once.and_return('0701000000')
-  #   SwxAssembler.write_swf(1, false, 4).should == File.read(File.join(File.dirname(__FILE__), 'fixtures', 'number_one_no_debug_compression_4.swx'))
-  # end
+  it 'should assemble a swx file without debugging and with compression' do
+		BytecodeConverter.should_receive(:convert).with(1).once.and_return('0701000000')
+		SwxAssembler.write_swf(1, false, 4).should == File.read(File.join(File.dirname(__FILE__), 'fixtures', 'number_one_no_debug_compression_4.swx'))
+	end
     
-  it 'should assemble a swx file with debugging and with compression' # do
-	#   BytecodeConverter.should_receive(:convert).with(1).once.and_return('0701000000')
-  #   SwxAssembler.write_swf(1, true, 4).should == File.read(File.join(File.dirname(__FILE__), 'fixtures', 'number_one_with_debug_compression_4.swx'))
-  # end
+  it 'should assemble a swx file with debugging and with compression' do
+		BytecodeConverter.should_receive(:convert).with(1).once.and_return('0701000000')
+		SwxAssembler.write_swf(1, true, 4).should == File.read(File.join(File.dirname(__FILE__), 'fixtures', 'number_one_with_debug_compression_4.swx'))
+	end
 end
 
 describe 'SwxAssembler#allow_domain_bytecode' do
