@@ -91,6 +91,19 @@ describe 'SwxGateway#process' do
 	  SwxGateway.process(:serviceClass => 'HelloWorld', :method => 'justSayTheWords', :args => '[null]')
 	end
 	
+	
+	it 'should process a hash of params with an args param containing only "[]" and call SwxAssembler#write_swf with them' do
+		hello_world = mock(SwxServiceClasses::HelloWorld)
+		
+		hello_world.should_receive(:send).with('just_say_the_words').and_return('Hello World!')
+		SwxServiceClasses::HelloWorld.should_receive(:new).and_return(hello_world)
+		
+		SwxAssembler.should_receive(:write_swf).with('Hello World!', nil, 4, nil, true)
+		
+	  SwxGateway.process(:serviceClass => 'HelloWorld', :method => 'justSayTheWords', :args => '[null]')
+	end
+	
+	
 	it 'should process a hash of params with an args param and call SwxAssembler#write_swf with them' do
 	  arithmetic = mock(SwxServiceClasses::Arithmetic)
 		arithmetic.should_receive(:send).with('addition', 1, 2).and_return(3)
