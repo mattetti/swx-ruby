@@ -114,6 +114,10 @@ describe 'SwxGateway#process' do
 		SwxGateway.process(:serviceClass  => 'Arithmetic', :method  => 'addition', :args => '[1, 2]')
 	end
 	
+	it 'should raise a NoMethodError when attempting to call methods that the service class inherited from Object' do
+		lambda { SwxGateway.process(:serviceClass  => 'TestDataTypes', :method  => 'instance_eval', :args => '["@foo"]') }.should raise_error(NoMethodError)
+	end
+	
 	it 'should convert "null" strings in the args param to nil before calling SwxAssembler#write_swf' do
 	  arithmetic = mock(SwxServiceClasses::Arithmetic)
 		arithmetic.should_receive(:send).with('addition', 1, nil).and_return(3)

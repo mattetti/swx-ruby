@@ -58,6 +58,7 @@ class SwxGateway
       service_class = class_eval("SwxServiceClasses::#{params[:serviceClass]}")
 
 			# convert camelCased params[:method] to underscored (does nothing if params[:method] is already underscored)
+			# This effectively bridges the gap between ActionScript and Ruby variable/method naming conventions.
 			params[:method] = params[:method].underscore
 
 			# convert JSON arguments to a Ruby object
@@ -66,9 +67,9 @@ class SwxGateway
 			# Convert 'null' strings in args array to nil
 			args = nillify_nulls(args) unless args.nil?
 			
-			# ================================================================================
-			# = TODO: Exception handling if specified method does not exist in service class =
-			# ================================================================================
+			# Prevent nefarious use of methods that the service class inherited from Object
+			raise NoMethodError unless (service_class.public_instance_methods - Object.public_instance_methods).include?(params[:method])
+			
       # Instantiate the service class, call the specified method, and capture the response
 			service_class_response = if args.nil?
 				# No args were passed, so assume the service class' method doesn't take any arguments
