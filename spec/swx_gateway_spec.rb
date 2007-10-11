@@ -118,6 +118,10 @@ describe 'SwxGateway#process' do
 		lambda { SwxGateway.process(:serviceClass  => 'TestDataTypes', :method  => 'instance_eval', :args => '["@foo"]') }.should raise_error(NoMethodError)
 	end
 	
+	it 'should raise an ArgumentError if any of the arguments in params[:args] equal "undefined"' do
+		lambda { SwxGateway.process(:serviceClass  => 'MyNiftyClass', :method  => 'method_requiring_args', :args => '["undefined"]') }.should raise_error(ArgumentError)
+	end
+	
 	it 'should convert "null" strings in the args param to nil before calling SwxAssembler#write_swf' do
 	  arithmetic = mock(SwxServiceClasses::Arithmetic)
 		arithmetic.should_receive(:send).with('addition', 1, nil).and_return(3)

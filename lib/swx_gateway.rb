@@ -53,6 +53,14 @@ class SwxGateway
 			# Call init_service_classes the first time SwxGateway#process is called
 			@service_classes_initialized ||= init_service_classes
 			
+			# convert JSON arguments to a Ruby object
+			args = json_to_ruby params[:args]
+			
+			raise ArgumentError, "The request contained undefined args.\n  serviceClass: #{params[:serviceClass]}\n  method: #{params[:method]}\n  args: #{args.join(', ')}" if args && args.any? { |argument| argument == 'undefined' }
+			
+			# Convert 'null' strings in args array to nil
+			args = nillify_nulls(args) unless args.nil?
+
 			# Fetch the class contant for the specified service class
 			validate_service_class_name(params[:serviceClass])
       service_class = class_eval("SwxServiceClasses::#{params[:serviceClass]}")
@@ -61,12 +69,6 @@ class SwxGateway
 			# This effectively bridges the gap between ActionScript and Ruby variable/method naming conventions.
 			params[:method] = params[:method].underscore
 
-			# convert JSON arguments to a Ruby object
-			args = json_to_ruby params[:args]
-			
-			# Convert 'null' strings in args array to nil
-			args = nillify_nulls(args) unless args.nil?
-			
 			# Prevent nefarious use of methods that the service class inherited from Object
 			raise NoMethodError unless (service_class.public_instance_methods - Object.public_instance_methods).include?(params[:method])
 			
