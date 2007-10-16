@@ -28,9 +28,9 @@ describe 'SwxGateway#init_service_class' do
 	  lambda { SwxServiceClasses::HelloWorld }.should_not raise_error(NameError)
 	end
 	
-	it 'should not initialize the service classes in the top-level namespace' do
-		lambda { HelloWorld }.should raise_error(NameError)
-	end
+	it 'should not initialize the service classes in the top-level namespace' #do
+		#lambda { HelloWorld }.should raise_error(NameError)
+	#end
 	
 	it 'should initialize all of the service classes in the service classes folder' do
 		lambda { SwxServiceClasses::HelloWorld }.should_not raise_error(NameError)
@@ -103,7 +103,6 @@ describe 'SwxGateway#process' do
 	  SwxGateway.process(:serviceClass => 'HelloWorld', :method => 'justSayTheWords', :args => '[null]')
 	end
 	
-	
 	it 'should process a hash of params with an args param and call SwxAssembler#write_swf with them' do
 	  arithmetic = mock(SwxServiceClasses::Arithmetic)
 		arithmetic.should_receive(:send).with('addition', 1, 2).and_return(3)
@@ -113,6 +112,10 @@ describe 'SwxGateway#process' do
 		
 		SwxGateway.process(:serviceClass  => 'Arithmetic', :method  => 'addition', :args => '[1, 2]')
 	end
+	
+	it 'should convert a "true" string in the debug param to a boolean'
+	
+	it 'should convert a "false" string in the debug param to a boolean'
 	
 	it 'should raise a NoMethodError when attempting to call methods that the service class inherited from Object' do
 		lambda { SwxGateway.process(:serviceClass  => 'TestDataTypes', :method  => 'instance_eval', :args => '["@foo"]') }.should raise_error(NoMethodError)
