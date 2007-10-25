@@ -11,6 +11,10 @@ describe BytecodeConverter, 'in regard to arrays' do
 		BytecodeConverter.convert([1, 2, 3]).should == '961400070300000007020000000701000000070300000042'
 	end
 
+	it 'should convert an array containing nil values to bytecode' do
+	  BytecodeConverter.convert([1, nil, 3]).should == '9610000703000000020701000000070300000042'
+	end
+
 	it %q(should convert an array of strings to bytecode) do
 		BytecodeConverter.convert(['one', 'two', 'three']).should == '961600007468726565000074776F00006F6E6500070300000042'
 	end
@@ -89,6 +93,10 @@ describe BytecodeConverter, 'in regard to hashes' do
   it %q[should convert a hash with nested arrays to bytecode] do
     BytecodeConverter.convert({'they' => ['really', 'work'], 'numbers' => [1, 2, 3]}).should == '960900006E756D626572730096140007030000000702000000070100000007030000004296060000746865790096130000776F726B00007265616C6C7900070200000042960500070200000043'
   end
+
+	it 'should convert a hash containing nil values to bytecode' do
+	  BytecodeConverter.convert({'hello' => nil}).should == '960D000068656C6C6F0002070100000043'
+	end
 end
 
 describe BytecodeConverter, 'in regard to integers' do

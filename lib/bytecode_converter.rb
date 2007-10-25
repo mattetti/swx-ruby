@@ -71,6 +71,10 @@ class BytecodeConverter
 					element = element[0]
 				end
 
+				# ===========================================================
+				# = TODO: Remove ActiveRecord::Base check from if statement =
+				# ===========================================================
+
 				# Create a push of the current bytecode, if
 					 # recursing into a complex data structure
 					 #									 							# or
@@ -93,9 +97,9 @@ class BytecodeConverter
 				end
 				
 				# value will only be populated if we're iterating over a hash
-				bytecode.push convert(value) unless value.nil?
+				bytecode.push convert(value) if data.is_a?(Hash)
 				
-				# element will always contain a something (whether iterating over a hash or an array)
+				# element will always contain something (whether iterating over a hash or an array)
 				bytecode.push convert(element)
 			end
 
