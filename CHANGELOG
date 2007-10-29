@@ -1,0 +1,7 @@
+*0.5* (October 29, 2007)
+
+* Rails controller integration (render :swx => @foo)
+
+* Fix handling of nil values in hash to bytecode conversion
+
+* Add CHANGELOG, LICENSE, and README files

@@ -1,6 +1,6 @@
-=========================================
-SWX Ruby: SWX on Rails Plugin Alpha 0.1.1
-=========================================
+======================================
+SWX Ruby: SWX on Rails Plugin Beta 0.5
+======================================
 
 GETTING STARTED
 ===============
@@ -46,8 +46,8 @@ http://swxformat.org/download/ to grab the SWX ActionScript library.
 Oh yeah, you may return ActiveRecord objects from your service classes; 
 SWX on Rails will happily serialize them for you. Go ahead, give it a try!
 
-SWX on Rails is very alpha and may break, throw its toys, eat your
-firstborn child, etc.; it is sure to be full of gaping security holes. 
+SWX on Rails is beta and may break, throw its toys, eat your
+firstborn child, etc. 
 Please post bug reports/suggestions to http://groups.google.com/group/swxruby. 
 Full-featured tracker coming soon.
 =======================================
