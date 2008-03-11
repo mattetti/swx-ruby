@@ -8,6 +8,15 @@ class Array
   end
 end
 
+class Hash
+  def stringify_keys
+    self.inject({}) do |options, (key, value)|
+      options[key.to_s] = value
+      options
+    end
+  end
+end
+
 class Object
 	# Taken from ActiveRecord
 	def instance_values

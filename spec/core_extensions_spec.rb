@@ -17,3 +17,11 @@ describe 'Object extensions' do
     MyClass.new.instance_values.sort_by { |key, value| value }.should == [['bar', 'bar'], ['foo', 'foo']]
   end
 end
+
+describe 'hash extension' do
+  it 'should convert a symbol keyed hash into a string keyed hash' do
+    {:this => 'this', :is => 'is', :test => 'test', :number => 0}.stringify_keys.should == {'this' => 'this', 'is' => 'is', 'test' => 'test', 'number' => 0}
+  end
+  
+  
+end

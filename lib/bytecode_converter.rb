@@ -29,6 +29,8 @@ class BytecodeConverter
 				integer_to_bytecode(data)
 	    when String
 	      string_to_bytecode(data)
+      when Symbol
+        string_to_bytecode(data.to_s)
 	    when FalseClass
 	      DataTypeCodes::BOOLEAN + '00'
 	    when TrueClass
@@ -58,8 +60,14 @@ class BytecodeConverter
 			stack = []
 
 			# Add the bytecode to initialize the data structure
-			bytecode.push(if data.is_a?(Array) then ActionCodes::INIT_ARRAY elsif data.is_a?(Hash) then ActionCodes::INIT_OBJECT end)
-
+			bytecode.push\
+			(if data.is_a?(Array) 
+			  ActionCodes::INIT_ARRAY 
+			elsif data.is_a?(Hash) 
+			  data = data.stringify_keys
+			  ActionCodes::INIT_OBJECT 
+			end)
+      
 			# Add the length of the data structure to the bytecode
 			bytecode.push integer_to_bytecode(data.length)
 			# Convert each element in the data structure to bytecode
@@ -67,8 +75,8 @@ class BytecodeConverter
 				
 				# If we're iterating over a hash, then split the element's key/value
 				if (data.is_a?(Hash))
-					value = element[1]
-					element = element[0]
+					value = element.last
+					element = element.first
 				end
 
 				# ===========================================================

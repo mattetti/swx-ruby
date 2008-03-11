@@ -99,6 +99,20 @@ describe BytecodeConverter, 'in regard to hashes' do
 	end
 end
 
+describe BytecodeConverter, 'in regard to hashes using symbol keys' do
+  it %q[should convert a hash with string and integer values to bytecode] do
+    BytecodeConverter.convert({:it => 'works', :number => 42}).should == BytecodeConverter.convert({'it' => 'works', 'number' => 42})
+  end
+
+  it %q[should convert a hash with nested arrays to bytecode and match the same hash using string keys] do
+    BytecodeConverter.convert({:they => ['really', 'work'], :numbers => [1, 2, 3]}).should == BytecodeConverter.convert({'they' => ['really', 'work'], 'numbers' => [1, 2, 3]})
+  end
+
+	it 'should convert a hash containing nil values to bytecode' do
+	  BytecodeConverter.convert({:hello => nil}).should ==  BytecodeConverter.convert({'hello' => nil})
+	end
+end
+
 describe BytecodeConverter, 'in regard to integers' do
 	it 'should convert "0" to bytecode' do
 	  BytecodeConverter.convert(0).should == '0700000000'
@@ -139,6 +153,17 @@ describe BytecodeConverter, 'in regard to strings' do
   it 'should convert an empty string to bytecode' do
     BytecodeConverter.convert('').should == '0000'
   end
+end
+
+describe BytecodeConverter, 'in regard to symbols' do
+  it 'should convert :hello to bytecode' do
+    BytecodeConverter.convert(:hello).should == '0068656C6C6F00'
+  end
+  
+  it 'should convert :goodbye to bytecode' do
+    BytecodeConverter.convert(:goodbye).should == '00676F6F6462796500'
+  end
+
 end
     
 describe BytecodeConverter, 'in regard to unhandled datatypes' do
