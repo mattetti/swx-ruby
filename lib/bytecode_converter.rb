@@ -60,8 +60,7 @@ class BytecodeConverter
 			stack = []
 
 			# Add the bytecode to initialize the data structure
-			bytecode.push\
-			(if data.is_a?(Array) 
+			bytecode.push(if data.is_a?(Array)
 			  ActionCodes::INIT_ARRAY 
 			elsif data.is_a?(Hash) 
 			  data = data.stringify_keys
